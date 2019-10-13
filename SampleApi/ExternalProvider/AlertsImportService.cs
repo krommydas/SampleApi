@@ -11,12 +11,14 @@ namespace SampleApi.ExternalProvider
 {
     public class AlertsImportService : Microsoft.Extensions.Hosting.BackgroundService
     {
-        public AlertsImportService(HttpClient httpClient, ExternalProviderConfiguration externalProviderConfiguration, 
-            AlertSystem alertsSystem, ILogger<AlertsImportService> loggingProvider)
+        public AlertsImportService(IHttpClientFactory httpClientFactory, ExternalProviderConfiguration externalProviderConfiguration, 
+           Storage.DataService dataService, ILogger<AlertsImportService> loggingProvider)
         {
-            this.HttpClient = httpClient;
+            this.HttpClient = httpClientFactory.CreateClient();
+            this.HttpClient.Timeout = TimeSpan.FromSeconds(externalProviderConfiguration.TimeoutInSeconds);
             this.ExternalProviderConfiguration = externalProviderConfiguration;
-            this.AlertsSystem = alertsSystem;
+            this.AlertsSystem = new AlertSystem(dataService);
+            this.LoggingProvider = loggingProvider;
         }
 
         HttpClient HttpClient;
@@ -30,7 +32,7 @@ namespace SampleApi.ExternalProvider
 
             var handler = new ExternalProviderHandler(HttpClient, LoggingProvider);
 
-            while(stoppingToken.IsCancellationRequested)
+            while(!stoppingToken.IsCancellationRequested)
             {
                 foreach (var alertProvider in ExternalProviderConfiguration.AlertProviders)
                 {

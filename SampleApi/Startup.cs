@@ -26,7 +26,7 @@ namespace SampleApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<Storage.DatabaseSettings>(Configuration.GetSection(nameof(Storage.DatabaseSettings)));
-            services.Configure<Storage.DatabaseSettings>(Configuration.GetSection(nameof(ExternalProvider.ExternalProviderConfiguration)));
+            services.Configure<ExternalProvider.ExternalProviderConfiguration>(Configuration.GetSection(nameof(ExternalProvider.ExternalProviderConfiguration)));
 
             services.AddSingleton<Storage.IDatabaseSettings>(sp => sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<Storage.DatabaseSettings>>().Value);
             services.AddSingleton(sp => sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ExternalProvider.ExternalProviderConfiguration>>().Value);

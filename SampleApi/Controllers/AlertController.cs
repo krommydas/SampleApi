@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SampleApi.Controllers
 {
-    //[Route("api/[controller]")]
+    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
     [ApiController]
     public class AlertController : ControllerBase
     {
@@ -18,32 +19,32 @@ namespace SampleApi.Controllers
 
         private BusinessLogic.AlertSystem Alerts;
 
-        [HttpGet]
+        [Microsoft.AspNetCore.Mvc.HttpGet]
         public IAsyncResult Get()
         {
             return Alerts.GetAlerts();
         }
 
-        [HttpGet]
-        public IAsyncResult Get(int id)
+        [Microsoft.AspNetCore.Mvc.HttpGet]
+        public IAsyncResult Get([FromUri] int id)
         {
             return Alerts.GetSingleAlert(id);
         }
 
-        [HttpPost]
-        public IAsyncResult Post([FromBody] BusinessLogic.Alert value)
+        [System.Web.Http.HttpPost]
+        public IAsyncResult Post([System.Web.Http.FromBody] BusinessLogic.Alert value)
         {
             return Alerts.InsertAlert(value);
         }
 
-        [HttpPut]
-        public IAsyncResult Put(int id, [FromBody] BusinessLogic.Alert value)
+        [System.Web.Http.HttpPut]
+        public IAsyncResult Put(int id, [System.Web.Http.FromBody] BusinessLogic.Alert value)
         {
             return Alerts.UpdateAlert(id, value);
         }
 
-        [HttpDelete]
-        public IAsyncResult Delete(int id)
+        [System.Web.Http.HttpDelete]
+        public IAsyncResult Delete([FromUri] int id)
         {
             return Alerts.DeleteAlert(id);
         }

@@ -25,7 +25,22 @@ namespace SampleApi.ExternalProvider
 
         public async Task<IEnumerable<BusinessLogic.Alert>> GetAlerts(AlertExternalProviderConfiguration providerConfiguration, CancellationToken stoppingToken)
         {
-            var response = await HttpClient.GetAsync(providerConfiguration.Url, HttpCompletionOption.ResponseContentRead, stoppingToken);
+            if(!Uri.IsWellFormedUriString(providerConfiguration.Url, UriKind.Absolute))
+            {
+                Logger.LogInformation("the alert provider url: {0} is invalid", providerConfiguration.Url);
+                return new BusinessLogic.Alert[0];
+            }
+
+            HttpResponseMessage response = null;
+            try
+            {
+                response = await HttpClient.GetAsync(new Uri(providerConfiguration.Url, UriKind.Absolute), HttpCompletionOption.ResponseContentRead, stoppingToken);
+            }
+            catch(Exception e)
+            {
+                Logger.LogError(e, "an error occured");
+                return new BusinessLogic.Alert[0];
+            }
 
             if (stoppingToken.IsCancellationRequested)
             {

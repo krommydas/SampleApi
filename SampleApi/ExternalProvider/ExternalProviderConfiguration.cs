@@ -12,7 +12,9 @@ namespace SampleApi.ExternalProvider
 
     public class ExternalProviderConfiguration
     {
-        public IEnumerable<AlertExternalProviderConfiguration> AlertProviders { get; set; }
+        public int TimeoutInSeconds { get; set; }
+
+        public List<AlertExternalProviderConfiguration> AlertProviders { get; set; }
 
         public int AlertsPollDelayInSeconds { get; set; }
     }

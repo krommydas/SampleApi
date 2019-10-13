@@ -26,7 +26,7 @@ namespace SampleApi
                 })
             .ConfigureServices(services =>
               {
-                  services.AddHostedService<ExternalProvider.AlertsImportService>();
+                  services.AddHostedService<ExternalProvider.AlertsImportService>();                
               });
     };
 }
