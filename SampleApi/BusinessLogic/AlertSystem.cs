@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SampleApi.BusinessLogic
 {
@@ -9,34 +11,45 @@ namespace SampleApi.BusinessLogic
     {
         public AlertSystem(Storage.DataService dataService)
         {
-            data = dataService;
+            Data = dataService;
         }
 
-        Storage.DataService data;
+        Storage.DataService Data;
+        //HttpClient HttpClient;
+        //ExternalProviderConfiguration ExternalProviderConfiguration;
+
+        #region CRUD
 
         public Task<List<Alert>> GetAlerts()
         {
-            return data.GetAllAlerts<Alert>();
+            return Data.GetAllAlerts<Alert>();
         }
 
         public Task<Alert> GetSingleAlert(int id)
         {
-            return data.GetAlert<Alert>(id);
+            return Data.GetAlert<Alert>(id);
         }
 
         public Task InsertAlert(Alert item)
         {
-            return data.InsertAlert(item.ToStorageItem());
+            return Data.InsertAlert(item.ToStorageItem());
+        }
+
+        public async Task InsertAlerts(IEnumerable<Alert> items)
+        {
+            await Data.InsertAlerts(items.Distinct().Select(x => x.ToStorageItem()));
         }
 
         public Task DeleteAlert(int id)
         {
-            return data.DeleteAlert(id);
+            return Data.DeleteAlert(id);
         }
 
         public Task UpdateAlert(int itemID, Alert update)
         {
-            return data.UpdateAlert(itemID, update.ToStorageItem());
+            return Data.UpdateAlert(itemID, update.ToStorageItem());
         }
+
+        #endregion
     }
 }

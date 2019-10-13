@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SampleApi.BusinessLogic;
 
 namespace SampleApi
 {
@@ -25,12 +26,18 @@ namespace SampleApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<Storage.DatabaseSettings>(Configuration.GetSection(nameof(Storage.DatabaseSettings)));
+            services.Configure<Storage.DatabaseSettings>(Configuration.GetSection(nameof(ExternalProvider.ExternalProviderConfiguration)));
 
             services.AddSingleton<Storage.IDatabaseSettings>(sp => sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<Storage.DatabaseSettings>>().Value);
+            services.AddSingleton(sp => sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ExternalProvider.ExternalProviderConfiguration>>().Value);
 
             services.AddSingleton<Storage.DataService>();
 
             services.AddTransient<BusinessLogic.AlertSystem>();
+
+            services.AddHttpClient<BusinessLogic.AlertSystem>();
+
+            services.AddLogging();
 
             services.AddControllers();
         }
@@ -45,7 +52,8 @@ namespace SampleApi
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseErrorHandling();
+           //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

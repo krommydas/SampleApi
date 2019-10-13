@@ -28,5 +28,18 @@ namespace SampleApi.BusinessLogic
                 Adresses = this.Adresses
             };
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null || !(obj is Alert))
+                return false;
+
+            return ((Alert)obj).ID.Equals(this.ID);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ID.GetHashCode();
+        }
     }
 }

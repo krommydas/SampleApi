@@ -43,6 +43,22 @@ namespace SampleApi.Storage
             });
         }
 
+        public async Task InsertAlerts(IEnumerable<Alert> items)
+        {
+            if (items == null)
+                throw new ArgumentNullException();
+
+            if (!items.Any()) return;
+
+            var itemIDs = items.Select(x => x.ID).ToHashSet();
+            var existingItemsCount = await this.Alerts.CountDocumentsAsync(x => itemIDs.Contains(x.ID));
+
+            if (existingItemsCount > 0)
+                throw new DuplicateException();
+
+            await this.Alerts.InsertManyAsync(items);
+        }
+
         public Task DeleteAlert(int id)
         {
             return GetAlert<Alert>(id).ContinueWith((existing) =>
