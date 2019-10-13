@@ -28,7 +28,7 @@ namespace SampleApi.ExternalProvider
         {
             stoppingToken.Register(() => HttpClient.Dispose());
 
-            var handler = new ExternalProviderHandler(HttpClient, ExternalProviderConfiguration, LoggingProvider);
+            var handler = new ExternalProviderHandler(HttpClient, LoggingProvider);
 
             while(stoppingToken.IsCancellationRequested)
             {

@@ -12,15 +12,15 @@ namespace SampleApi.ExternalProvider
 {
     public class ExternalProviderHandler
     {
-        public ExternalProviderHandler(HttpClient httpClient, ExternalProviderConfiguration externalProviderConfiguration, ILogger logger)
+        public ExternalProviderHandler(HttpClient httpClient, ILogger logger)
         {
             this.HttpClient = httpClient;
-            this.ExternalProviderConfiguration = externalProviderConfiguration;
+           // this.ExternalProviderConfiguration = externalProviderConfiguration;
             this.Logger = logger;
         }
 
         HttpClient HttpClient;
-        ExternalProviderConfiguration ExternalProviderConfiguration;
+        //ExternalProviderConfiguration ExternalProviderConfiguration;
         ILogger Logger;
 
         public async Task<IEnumerable<BusinessLogic.Alert>> GetAlerts(AlertExternalProviderConfiguration providerConfiguration, CancellationToken stoppingToken)

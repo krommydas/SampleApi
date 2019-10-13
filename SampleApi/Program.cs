@@ -22,6 +22,7 @@ namespace SampleApi
             .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.CaptureStartupErrors(true);
                 })
             .ConfigureServices(services =>
               {
