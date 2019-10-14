@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SampleApi.Controllers
@@ -20,12 +19,12 @@ namespace SampleApi.Controllers
         private BusinessLogic.AlertSystem Alerts;
 
         [Microsoft.AspNetCore.Mvc.HttpGet]
-        public IAsyncResult Get()
+        public IAsyncResult GetAll()
         {
             return Alerts.GetAlerts();
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
+        [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
         public IAsyncResult Get([FromUri] int id)
         {
             return Alerts.GetSingleAlert(id);

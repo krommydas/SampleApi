@@ -12,7 +12,7 @@ namespace SampleApi.BusinessLogic
     {
         public static IApplicationBuilder UseErrorHandling(this IApplicationBuilder builder)
         {
-            builder.UseExceptionHandler((app) =>
+            return builder.UseExceptionHandler((app) =>
             {
                 app.Run(async context =>
                 {
@@ -22,7 +22,6 @@ namespace SampleApi.BusinessLogic
                         context.Features.Get<IExceptionHandlerPathFeature>();
 
                     context.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
-
 
                     if (exceptionHandlerPathFeature.Error is Storage.DuplicateException)
                     {
@@ -42,8 +41,6 @@ namespace SampleApi.BusinessLogic
                         await context.Response.WriteAsync("something went wrong");
                 });
             });
-
-            return builder;
         }
     }
 }

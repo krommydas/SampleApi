@@ -35,7 +35,8 @@ namespace SampleApi
 
             services.AddTransient<BusinessLogic.AlertSystem>();
 
-            services.AddHttpClient<BusinessLogic.AlertSystem>();
+            services.AddHttpClient();
+           // services.AddHttpClient<BusinessLogic.AlertSystem>();
 
             services.AddLogging();
 
@@ -53,11 +54,12 @@ namespace SampleApi
             app.UseRouting();
 
             app.UseErrorHandling();
-           //app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                //endpoints.MapDefaultControllerRoute();
             });
         }
     }
