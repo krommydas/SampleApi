@@ -18,24 +18,26 @@ namespace SampleApi.Storage
         }
 
         IMongoCollection<Alert> Alerts { get; set; }
-        
-        public Task<List<ApiProjection>> GetAllAlerts<ApiProjection>()
+
+        public delegate ReturnType ProjectTo<ReturnType>(Alert item);
+
+        public Task<List<ApiProjection>> GetAllAlerts<ApiProjection>(ProjectTo<ApiProjection> projectDel)
         {
             var excludeMongoID = Builders<Alert>.Projection.Exclude(x => x.MongoID);
-            return Alerts.Find(x => true).Project(excludeMongoID).As<ApiProjection>().ToListAsync();
+            return Alerts.Find(x => true).Project(x => projectDel(x)).ToListAsync();
         }
 
-        public Task<ApiProjection> GetAlert<ApiProjection>(int id)
+        public Task<ApiProjection> GetAlert<ApiProjection>(int id, ProjectTo<ApiProjection> projectDel)
         {
             var excludeMongoID = Builders<Alert>.Projection.Exclude(x => x.MongoID);
-            return Alerts.Find(x => x.ID == id).Project(excludeMongoID).As<ApiProjection>().FirstOrDefaultAsync();
+            return Alerts.Find(x => x.ID == id).Project(x => projectDel(x)).FirstOrDefaultAsync();
         }
 
         public Task InsertAlert(Alert item)
         {
-            return GetAlert<Alert>(item.ID).ContinueWith((existing) =>
+            return Alerts.CountDocumentsAsync(x => x.ID == item.ID).ContinueWith((existing) =>
             {
-                if (existing.Result != null)
+                if (existing.Result != 0)
                     throw new DuplicateException();
 
                 try { Alerts.InsertOne(item); }
@@ -61,26 +63,16 @@ namespace SampleApi.Storage
 
         public Task DeleteAlert(int id)
         {
-            return GetAlert<Alert>(id).ContinueWith((existing) =>
+            return Alerts.FindOneAndDeleteAsync(x => x.ID == id).ContinueWith((existing) =>
             {
                 if (existing.Result == null)
                     throw new NotFoundException();
-
-                try { Alerts.DeleteOne(x => x.MongoID == existing.Result.MongoID); }
-                catch (Exception e) { throw new PersistenceException(); }
             });
         }
 
         public Task UpdateAlert(int existingItem, Alert update)
         {
-            return GetAlert<Alert>(existingItem).ContinueWith((existing) =>
-            {
-                if (existing.Result == null)
-                    throw new NotFoundException();
-
-                try { Alerts.ReplaceOne(x => x.MongoID == existing.Result.MongoID, update); }
-                catch (Exception e) { throw new PersistenceException(); }
-            });
+            return Alerts.FindOneAndReplaceAsync(x => x.ID == existingItem, update);
         }
     }
 }

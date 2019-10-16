@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SampleApi.Controllers
@@ -19,33 +20,49 @@ namespace SampleApi.Controllers
         private BusinessLogic.AlertSystem Alerts;
 
         [Microsoft.AspNetCore.Mvc.HttpGet]
-        public IAsyncResult GetAll()
+        public async Task<ActionResult<IEnumerable<BusinessLogic.Alert>>> GetAll()
         {
-            return Alerts.GetAlerts();
+            return await Alerts.GetAlerts();
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
-        public IAsyncResult Get([FromUri] int id)
+        public async Task<ActionResult<BusinessLogic.Alert>> GetById([FromUri] int id)
         {
-            return Alerts.GetSingleAlert(id);
+            return await Alerts.GetSingleAlert(id);
         }
 
-        [System.Web.Http.HttpPost]
-        public IAsyncResult Post([System.Web.Http.FromBody] BusinessLogic.Alert value)
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        [Consumes(System.Net.Mime.MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<BusinessLogic.Alert>> Create([System.Web.Http.FromBody] BusinessLogic.Alert value)
         {
-            return Alerts.InsertAlert(value);
+            await Alerts.InsertAlert(value);
+
+            return CreatedAtAction(nameof(GetById), new { id = value.ID }, value);
         }
 
-        [System.Web.Http.HttpPut]
-        public IAsyncResult Put(int id, [System.Web.Http.FromBody] BusinessLogic.Alert value)
+        [Microsoft.AspNetCore.Mvc.HttpPut("{id}")]
+        [Consumes(System.Net.Mime.MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Update(int id, BusinessLogic.Alert value)
         {
-            return Alerts.UpdateAlert(id, value);
+            if (id != value.ID)
+            {
+                return BadRequest();
+            }
+
+            await Alerts.UpdateAlert(id, value);
+
+            return NoContent();
         }
 
-        [System.Web.Http.HttpDelete]
-        public IAsyncResult Delete([FromUri] int id)
+        [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Delete(int id)
         {
-            return Alerts.DeleteAlert(id);
+            await Alerts.DeleteAlert(id);
+
+            return NoContent();
         }
     }
 }

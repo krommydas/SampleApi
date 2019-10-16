@@ -16,12 +16,12 @@ namespace SampleApi.BusinessLogic
             {
                 app.Run(async context =>
                 {
-                    context.Response.ContentType = System.Net.Mime.MediaTypeNames.Text.Plain;
-
                     var exceptionHandlerPathFeature =
                         context.Features.Get<IExceptionHandlerPathFeature>();
 
-                    context.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+                    context.Response.Clear();
+                    context.Response.ContentType = System.Net.Mime.MediaTypeNames.Text.Plain;
+                    context.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;               
 
                     if (exceptionHandlerPathFeature.Error is Storage.DuplicateException)
                     {

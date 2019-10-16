@@ -29,6 +29,11 @@ namespace SampleApi.BusinessLogic
             };
         }
 
+        public static Alert FromStorageItem(Storage.Alert item)
+        {
+            return new Alert() { ID = item.ID, Title = item.Title, Severity = item.Severity, Adresses = item.Adresses };
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is null || !(obj is Alert))

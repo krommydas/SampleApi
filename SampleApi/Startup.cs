@@ -54,6 +54,8 @@ namespace SampleApi
             app.UseRouting();
 
             app.UseErrorHandling();
+
+           // app.UseCors();
             //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

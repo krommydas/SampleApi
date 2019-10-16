@@ -38,7 +38,7 @@ namespace SampleApi.ExternalProvider
             }
             catch(Exception e)
             {
-                Logger.LogError(e, "an error occured");
+                Logger.LogError(e, "an error occured while trying to communicate with the provider");
                 return new BusinessLogic.Alert[0];
             }
 
@@ -57,29 +57,31 @@ namespace SampleApi.ExternalProvider
             {
                 Logger.LogInformation("failed to get a response from {0}, with status code: {1} and message: {2}", 
                     response.RequestMessage.RequestUri, response.StatusCode, response.ReasonPhrase);
-                return default(ResultType);
+                return default;
             }
 
-            using (var responseContent = await response.Content.ReadAsStreamAsync())
+            try
             {
-                using (var reader = new Newtonsoft.Json.Bson.BsonDataReader(responseContent))
-                {
-                    var result = GetJsonSerializer(response.RequestMessage.RequestUri).Deserialize<ResultType>(reader);
-                    return result;
-                }
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<ResultType>(responseJson);
+            }
+             catch(Exception e)
+            {
+                Logger.LogError(e, "an error while trying to deserialize the response from client occured");
+                return default;
             }
         }
 
-        private Newtonsoft.Json.JsonSerializer GetJsonSerializer(Uri uri)
-        {
-            return Newtonsoft.Json.JsonSerializer.CreateDefault(new Newtonsoft.Json.JsonSerializerSettings()
-            {
-                Error = new EventHandler<ErrorEventArgs>((sender, eventsArgs) =>
-                {
-                    Logger.LogError(eventsArgs.ErrorContext.Error, "failed to deserialize from {0}", uri);
-                })
-            });       
-        }
+        //private Newtonsoft.Json.JsonSerializer GetJsonSerializer(Uri uri)
+        //{
+        //    return Newtonsoft.Json.JsonSerializer.CreateDefault(new Newtonsoft.Json.JsonSerializerSettings()
+        //    {
+        //        Error = new EventHandler<ErrorEventArgs>((sender, eventsArgs) =>
+        //        {
+        //            Logger.LogError(eventsArgs.ErrorContext.Error, "failed to deserialize from {0}", uri);
+        //        })
+        //    });       
+        //}
 
     }
 }

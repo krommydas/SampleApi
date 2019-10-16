@@ -22,12 +22,12 @@ namespace SampleApi.BusinessLogic
 
         public Task<List<Alert>> GetAlerts()
         {
-            return Data.GetAllAlerts<Alert>();
+            return Data.GetAllAlerts<Alert>(Alert.FromStorageItem);
         }
 
         public Task<Alert> GetSingleAlert(int id)
         {
-            return Data.GetAlert<Alert>(id);
+            return Data.GetAlert<Alert>(id, Alert.FromStorageItem);
         }
 
         public Task InsertAlert(Alert item)
